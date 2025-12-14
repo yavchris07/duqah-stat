@@ -1,12 +1,12 @@
+"use client";
 import { useState } from "react";
 
 export default function Home() {
+  const handleSubmit = () => {};
 
-  const handleSubmit = () => {}
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const [email,setEmail] = useState('')
-  const [password,setPassword] = useState('')
-  
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans">
       <div className="">
@@ -23,6 +23,8 @@ export default function Home() {
               type="number"
               className="mt-2 block w-full text-gray-500 rounded border border-zinc-300 bg-white px-3 py-3 shadow-sm placeholder:text-zinc-400 focus:border-[#558455] focus:outline-none focus:ring-1 focus:ring-[#558455]"
               placeholder="+243 "
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="mt-2">
@@ -33,6 +35,8 @@ export default function Home() {
               type="password"
               className="mt-2 block w-full text-gray-500 rounded border border-zinc-300 bg-white px-3 py-3 shadow-sm placeholder:text-zinc-400 focus:border-[#558455] focus:outline-none focus:ring-1 focus:ring-[#558455]"
               placeholder="Votre mot de passe"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div className="mt-4">
