@@ -1,8 +1,12 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Home() {
-  const handleSubmit = () => {};
+  const handleSubmit = () => {
+    router.push("/dashboard");
+  };
+  const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,11 +44,20 @@ export default function Home() {
             />
           </div>
           <div className="mt-4">
-            <button className="w-full rounded bg-[#558455] px-4 py-3 font-medium text-white hover:bg-[#4a744a] transition-colors duration-200">
+            {/* <button
+              className="w-full rounded bg-[#558455] px-4 py-3 font-medium text-white hover:bg-[#4a744a] transition-colors duration-200"
+               
+            >
               Se connecter
-            </button>
+            </button> */}
           </div>
         </form>
+        <p
+          className="w-full rounded bg-[#558455] text-center px-4 py-3 font-medium text-white hover:bg-[#4a744a] transition-colors duration-200"
+          onClick={() => router.push("/dashboard")}
+        >
+          Se connecter
+        </p>
         <p className="text-[12px] text-gray-400 mt-3 text-center">
           Pas de compte ?{" "}
           <span className="text-gray-600">
