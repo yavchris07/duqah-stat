@@ -1,7 +1,12 @@
 "use client";
 
 import { Skeleton } from "@/component/skeleton";
-import { CircleUser, LogOut } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  CircleUser,
+  LogOut,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   PieChart,
@@ -13,9 +18,10 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  Legend,
 } from "recharts";
 
-const COLORS = ["#558455", "#353535", "#fc5d02", "#558455"];
+const COLORS = ["#1b7045", "#353535", "#fc5d02", "#558455"];
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -66,11 +72,11 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gray-50 p-6 space-y-10">
       <div className="flex justify-between">
         <div className="flex gap-2">
-          <CircleUser className="text-[#353535]"/>
+          <CircleUser className="text-[#353535]" />
           <h2 className="text-[#353535]">Utilisateur</h2>
         </div>
         <div>
-          <LogOut className="text-red-600"/>
+          <LogOut className="text-red-600" />
           {/* <h2 className="text-[#353535]"> Se deconnecter</h2> */}
         </div>
       </div>
@@ -86,9 +92,16 @@ export default function DashboardPage() {
             "
           >
             <p className="text-sm text-gray-500">{stat.title}</p>
-            <p className="mt-2 text-3xl font-bold text-[#558455]">
-              {stat.value}
-            </p>
+            <div className="flex items-center justify-between">
+              <p className="mt-2 text-3xl font-bold text-[#558455]">
+                {stat.value}
+              </p>
+              {Number(stat.value) > 50 ? (
+                <ArrowUp className="text-[#558455]" />
+              ) : (
+                <ArrowDown className="text-red-600" />
+              )}
+            </div>
           </div>
         ))}
       </section>
@@ -105,12 +118,12 @@ export default function DashboardPage() {
         <h2
           className="
             text-lg font-semibold mb-4
-            text-gray-600
+            text-gray-600 text-center
             opacity-100
             transition-opacity duration-300
           "
         >
-          Répartition par device
+          Répartition par appareil
         </h2>
 
         <div className="h-72">
@@ -123,11 +136,13 @@ export default function DashboardPage() {
                 innerRadius={60}
                 outerRadius={100}
                 paddingAngle={5}
+                // label
               >
                 {deviceData.map((_, index) => (
-                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                  <Cell key={index}  fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
+              <Legend/>
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
@@ -142,7 +157,7 @@ export default function DashboardPage() {
           hover:shadow-md
         "
       >
-        <h2 className="text-lg text-gray-600 font-semibold mb-4">
+        <h2 className="text-lg text-gray-600 font-semibold mb-4 text-center">
           Visiteurs par pays
         </h2>
 
@@ -150,9 +165,9 @@ export default function DashboardPage() {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={countryData}>
               <XAxis dataKey="country" />
-              <YAxis />
+              {/* <YAxis /> */}
               <Tooltip />
-              <Bar dataKey="value" fill="#fc5d02" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="value" fill="#fc5d02" radius={[6, 6, 0, 0]}/>
             </BarChart>
           </ResponsiveContainer>
         </div>

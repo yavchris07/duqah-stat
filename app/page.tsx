@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export default function Home() {
   const handleSubmit = () => {
-    router.push("/dashboard");
+    // router.push("/dashboard");
   };
   const router = useRouter();
 
@@ -13,7 +13,7 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans">
-      <div className="">
+      <div className="px-3">
         <h1 className="text-2xl font-bold text-zinc-800">Duqah Stat</h1>
         <p className="mt-4 text-[#558455]">
           La statistique de vos produits pour mieux decider.
