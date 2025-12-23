@@ -1,12 +1,12 @@
 import { hash, compare } from 'bcryptjs'
 import { randomBytes } from 'crypto'
 
-const SALT_ROUNDS = 12
+// const SALT_ROUNDS = 12
 const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000 // 7 jours
 
-export async function hashPassword(password: string): Promise<string> {
-  return hash(password, SALT_ROUNDS)
-}
+// export async function hashPassword(password: string): Promise<string> {
+//   return hash(password, SALT_ROUNDS)
+// }
 
 export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
   return compare(password, hashedPassword)

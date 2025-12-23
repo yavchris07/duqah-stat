@@ -1,10 +1,19 @@
-// app/api/auth/signin/route.ts
+// app/api/login/route.ts
 import { AuthService } from '@/auth-service'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
     try {
-        const { email, password } = await request.json()
+        // const { email, password } = await request.json()
+
+        const body = await request.json();
+        console.log("BODY REÇU :", body);
+
+        const { email, password } = body;
+
+        if (!email || !password) {
+            return NextResponse.json({ error: 'Email et mot de passe sont requis' }, { status: 400 });
+        }
 
         if (!email || !password) {
             return NextResponse.json(
@@ -31,8 +40,8 @@ export async function POST(request: NextRequest) {
                 { error: error.message },
                 { status: 400 }
             )
-        }else{
-            return NextResponse.json({error : error})
+        } else {
+            return NextResponse.json({ error: error })
         }
 
     }

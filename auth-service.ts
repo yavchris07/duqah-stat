@@ -1,4 +1,4 @@
-import { hashPassword, verifyPassword, generateToken, generateSessionToken, getSessionExpiry } from './auth-utils'
+import { generateToken, generateSessionToken, getSessionExpiry } from './auth-utils'
 import { query, queryOne } from './lib/db'
 import { toMySQLDateTime } from './lib/db-utils'
 import { User } from './types'
@@ -9,30 +9,30 @@ export const AuthService = {
 
 
 
-    // CORRECTION dans lib/auth-service.ts
-    async generateUniqueUsername(email: string): Promise<string> {
-        const baseUsername = email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '')
-        let username = baseUsername
-        let counter = 1
+    // // CORRECTION dans lib/auth-service.ts
+    // async generateUniqueUsername(email: string): Promise<string> {
+    //     const baseUsername = email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '')
+    //     let username = baseUsername
+    //     let counter = 1
 
-        while (true) {
-            const existing = await queryOne(
-                'SELECT id FROM profiles WHERE username = ?',
-                [username]
-            )
+    //     while (true) {
+    //         const existing = await queryOne(
+    //             'SELECT id FROM profiles WHERE username = ?',
+    //             [username]
+    //         )
 
-            if (!existing) {
-                return username
-            }
+    //         if (!existing) {
+    //             return username
+    //         }
 
-            username = `${baseUsername}${counter}`
-            counter++
+    //         username = `${baseUsername}${counter}`
+    //         counter++
 
-            if (counter > 100) {
-                throw new Error('Impossible de générer un nom d\'utilisateur unique')
-            }
-        }
-    },
+    //         if (counter > 100) {
+    //             throw new Error('Impossible de générer un nom d\'utilisateur unique')
+    //         }
+    //     }
+    // },
 
     async signUp(email: string, password: string, fullName: string) {
         try {
@@ -47,13 +47,13 @@ export const AuthService = {
             }
 
             // Hasher le mot de passe
-            const passwordHash = await hashPassword(password)
+            // const passwordHash = await hashPassword(password)
             const verificationToken = generateToken()
 
             // Créer l'utilisateur et récupérer l'ID correctement
             const result = await query(
                 'INSERT INTO users (email, password_hash, full_name, verification_token) VALUES (?, ?, ?, ?)',
-                [email, passwordHash, fullName, verificationToken]
+                [email, fullName, verificationToken]
             )
 
             // RÉCUPÉRER L'ID CORRECTEMENT - MySQL avec UUID()
@@ -68,8 +68,8 @@ export const AuthService = {
 
             // Créer le profil utilisateur
             // const username = email.split('@')[0] + Math.random().toString(36).substring(2, 8)
-            const nikename = await this.generateUniqueUsername(email)
-            const username = nikename
+            // const nikename = await this.generateUniqueUsername(email)
+            const username = ''
             await query(
                 'INSERT INTO profiles (user_id, username) VALUES (?, ?)',
                 [userId.id, username]
@@ -83,15 +83,26 @@ export const AuthService = {
     },
 
     async signIn(email: string, password: string) {
+        // const user: User = await queryOne(
+        //     'SELECT id_client, nom,email, telephone, role FROM client WHERE email = ? AND passwords = ?',
+        //     [email,password]
+        // )
+
+        // if (!user) throw new Error('Email ou mot de passe incorrect')
+
+        // const valid = await verifyPassword(password, user.passwords)
+        // if (!valid) throw new Error('Email ou mot de passe incorrect')
+
         const user: User = await queryOne(
-            'SELECT id, email, password_hash, full_name, role FROM users WHERE email = ?',
+            'SELECT id_client, email, telephone, role, passwords FROM client WHERE email = ?',
             [email]
-        )
+        );
 
-        if (!user) throw new Error('Email ou mot de passe incorrect')
+        if (!user) throw new Error('Email ou mot de passe incorrect');
 
-        const valid = await verifyPassword(password, user.password_hash)
-        if (!valid) throw new Error('Email ou mot de passe incorrect')
+        // comparaison directe (dev uniquement)
+        if (user.passwords !== password) throw new Error('Email ou mot de passe incorrect');
+
 
         if (!user.email) throw new Error('Veuillez vérifier votre email avant de vous connecter')
 
@@ -133,7 +144,7 @@ export const AuthService = {
     },
 
     async verifyEmail(token: string) {
-        const user: User = await queryOne('SELECT id FROM users WHERE verification_token = ?', [token])
+        const user: User = await queryOne('SELECT id_client FROM client WHERE verification_token = ?', [token])
         if (!user) throw new Error('Token de vérification invalide')
 
         await query('UPDATE users SET email_verified = TRUE, verification_token = NULL WHERE id = ?', [user.id])
@@ -156,22 +167,22 @@ export const AuthService = {
         return { success: true }
     },
 
-    async resetPassword(token: string, newPassword: string) {
-        const user: User = await queryOne(
-            'SELECT id FROM users WHERE reset_token = ? AND reset_token_expires > NOW()',
-            [token]
-        )
-        if (!user) throw new Error('Token de réinitialisation invalide ou expiré')
+    // async resetPassword(token: string, newPassword: string) {
+    //     const user: User = await queryOne(
+    //         'SELECT id FROM users WHERE reset_token = ? AND reset_token_expires > NOW()',
+    //         [token]
+    //     )
+    //     if (!user) throw new Error('Token de réinitialisation invalide ou expiré')
 
-        const passwordHash = await hashPassword(newPassword)
-        await query(
-            'UPDATE users SET password_hash = ?, reset_token = NULL, reset_token_expires = NULL WHERE id = ?',
-            [passwordHash, user.id]
-        )
+    //     const passwordHash = await hashPassword(newPassword)
+    //     await query(
+    //         'UPDATE users SET password_hash = ?, reset_token = NULL, reset_token_expires = NULL WHERE id = ?',
+    //         [passwordHash, user.id]
+    //     )
 
-        await this.signOutAll(user.id)
-        return { success: true }
-    },
+    //     await this.signOutAll(user.id)
+    //     return { success: true }
+    // },
 }
 
 

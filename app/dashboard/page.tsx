@@ -1,12 +1,7 @@
 "use client";
 
 import { Skeleton } from "@/component/skeleton";
-import {
-  ArrowDown,
-  ArrowUp,
-  CircleUser,
-  LogOut,
-} from "lucide-react";
+import { ArrowDown, ArrowUp, CircleUser, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   PieChart,
@@ -14,14 +9,21 @@ import {
   Cell,
   BarChart,
   Bar,
-  XAxis,
-  YAxis,
   Tooltip,
   ResponsiveContainer,
   Legend,
+  LabelList,
 } from "recharts";
 
 const COLORS = ["#1b7045", "#353535", "#fc5d02", "#558455"];
+
+type DataPoint = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  value: string | number;
+};
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -49,7 +51,11 @@ export default function DashboardPage() {
     { country: "France", value: 4200 },
     { country: "USA", value: 3100 },
     { country: "Canada", value: 1800 },
-    { country: "Allemagne", value: 1500 },
+    { country: "Madagascar", value: 1500 },
+    { country: "Burundi", value: 700 },
+    { country: "Tanzania", value: 2500 },
+    { country: "Uganda", value: 1000 },
+    { country: "Congo-Brazza", value: 800 },
   ];
 
   if (loading) {
@@ -61,6 +67,7 @@ export default function DashboardPage() {
           <Skeleton className="h-28" />
         </div>
 
+        <Skeleton className="h-80" />
         <Skeleton className="h-80" />
         <Skeleton className="h-80" />
         <Skeleton className="h-40" />
@@ -77,7 +84,6 @@ export default function DashboardPage() {
         </div>
         <div>
           <LogOut className="text-red-600" />
-          {/* <h2 className="text-[#353535]"> Se deconnecter</h2> */}
         </div>
       </div>
       {/* SECTION 1 — CARDS */}
@@ -139,10 +145,10 @@ export default function DashboardPage() {
                 // label
               >
                 {deviceData.map((_, index) => (
-                  <Cell key={index}  fill={COLORS[index % COLORS.length]} />
+                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Legend/>
+              <Legend />
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
@@ -164,10 +170,14 @@ export default function DashboardPage() {
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={countryData}>
-              <XAxis dataKey="country" />
-              {/* <YAxis /> */}
               <Tooltip />
-              <Bar dataKey="value" fill="#fc5d02" radius={[6, 6, 0, 0]}/>
+
+              <Bar dataKey="value" fill="#fc5d02" radius={[6, 6, 0, 0]}>
+                <LabelList
+                  dataKey="country"
+                  content={(props: DataPoint) => <VerticalLabel {...props} />}
+                />
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -185,3 +195,25 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+const VerticalLabel = ({ x, y, width, height, value }: DataPoint) => {
+  if (height < 30) return null;
+
+  const cx = x + width / 2;
+  const cy = y + height / 2;
+
+  return (
+    <text
+      x={cx}
+      y={cy}
+      fill="#fff"
+      fontSize={11}
+      fontWeight="600"
+      textAnchor="middle"
+      dominantBaseline="middle"
+      transform={`rotate(-90, ${cx}, ${cy})`}
+    >
+      {value}
+    </text>
+  );
+};
