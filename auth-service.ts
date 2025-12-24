@@ -94,7 +94,7 @@ export const AuthService = {
         // if (!valid) throw new Error('Email ou mot de passe incorrect')
 
         const user: User = await queryOne(
-            'SELECT id_client, email, telephone, role, passwords FROM client WHERE email = ?',
+            'SELECT id_client, nom, email, telephone, role, passwords FROM client WHERE email = ?',
             [email]
         );
 
@@ -109,11 +109,11 @@ export const AuthService = {
         const sessionToken = generateSessionToken()
         const expiresAt = getSessionExpiry()
 
-        await query('INSERT INTO sessions (user_id, token, expires_at) VALUES (?, ?, ?)', [
-            user.id,
-            sessionToken,
-            toMySQLDateTime(expiresAt),
-        ])
+        // await query('INSERT INTO sessions (user_id, token, expires_at) VALUES (?, ?, ?)', [
+        //     user.id_client,
+        //     sessionToken,
+        //     toMySQLDateTime(expiresAt),
+        // ])
 
         // const { password_hash, ...userSafe } = user
         return { success: true, user, sessionToken, expiresAt }
@@ -147,7 +147,7 @@ export const AuthService = {
         const user: User = await queryOne('SELECT id_client FROM client WHERE verification_token = ?', [token])
         if (!user) throw new Error('Token de vérification invalide')
 
-        await query('UPDATE users SET email_verified = TRUE, verification_token = NULL WHERE id = ?', [user.id])
+        await query('UPDATE users SET email_verified = TRUE, verification_token = NULL WHERE id = ?', [user.id_client])
         return { success: true }
     },
 
@@ -161,7 +161,7 @@ export const AuthService = {
         await query('UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE id = ?', [
             resetToken,
             resetTokenExpires,
-            user.id,
+            user.id_client,
         ])
 
         return { success: true }

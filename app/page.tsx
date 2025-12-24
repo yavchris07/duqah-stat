@@ -54,10 +54,15 @@ export default function Home() {
       });
 
       const data = await res.json();
+      console.log('xxxxxx',data)
+      localStorage.setItem("clienti", data.user.id_client);
+      localStorage.setItem("role", data.user.role);
+      localStorage.setItem("nom", data.user.nom);
 
       if (!res.ok) throw new Error(data.error);
 
       router.replace("/dashboard");
+
     } catch (error) {
       setMessage(error instanceof Error ? error.message : String(error));
     } finally {

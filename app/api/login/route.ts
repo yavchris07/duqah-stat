@@ -26,12 +26,12 @@ export async function POST(request: NextRequest) {
 
         // Créer un cookie de session
         const response = NextResponse.json(result)
-        response.cookies.set('session_token', result.sessionToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: 7 * 24 * 60 * 60
-        })
+        // response.cookies.set('session_token', result.sessionToken, {
+        //     httpOnly: true,
+        //     secure: process.env.NODE_ENV === 'production',
+        //     sameSite: 'lax',
+        //     maxAge: 7 * 24 * 60 * 60
+        // })
 
         return response
     } catch (error) {
@@ -46,3 +46,4 @@ export async function POST(request: NextRequest) {
 
     }
 }
+
