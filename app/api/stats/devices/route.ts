@@ -12,10 +12,7 @@ export async function GET(request: Request) {
     );
   }
 
-  const devices = await query<{
-    device_type: string;
-    visites: number;
-  }[]>(
+  const devices = await query(
     `
     SELECT device_type, COUNT(*) AS visites
     FROM user_events
@@ -23,7 +20,7 @@ export async function GET(request: Request) {
     GROUP BY device_type
     `,
     [clientId]
-  );
+  ) as { device_type: string; visites: number }[];
 
   return NextResponse.json(devices);
 }

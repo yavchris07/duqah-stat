@@ -78,7 +78,7 @@ export default function Home() {
           La statistique de vos produits pour mieux decider.
         </p>
 
-        <p className="text-red-700">Erreur {message}</p>
+        <p className="text-red-700">{message}</p>
         <form onSubmit={handleLogin}>
           <div className="mt-2">
             <label htmlFor="" className="text-gray-400">

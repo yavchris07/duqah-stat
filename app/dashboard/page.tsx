@@ -22,6 +22,8 @@ type TotalStats = {
   visites: number;
 };
 
+type ConversionStat = { conversion: number };
+type HesitateStat = { hesitation: number };
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -30,6 +32,8 @@ export default function DashboardPage() {
   const [devices, setDevices] = useState([]);
   const [total, setTotal] = useState<TotalStats | null>(null);
   const [countries, setCountries] = useState([]);
+  const [conversion, setConversion] = useState<ConversionStat | null>(null);
+  const [hesitate, setHesitate] = useState<HesitateStat | null>(null);
 
   const [nom] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
@@ -50,15 +54,19 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function loadStats() {
-      const [d, t, c] = await Promise.all([
+      const [d, t, c, h, co] = await Promise.all([
         fetch(`/api/stats/devices?client_id=${id}`).then((r) => r.json()),
         fetch(`/api/stats/total?client_id=${id}`).then((r) => r.json()),
         fetch(`/api/stats/country?client_id=${id}`).then((r) => r.json()),
+        fetch(`/api/stats/hesitation?client_id=${id}`).then((r) => r.json()),
+        fetch(`/api/stats/conversion?client_id=${id}`).then((r) => r.json()),
       ]);
 
       setDevices(d);
       setTotal(t);
       setCountries(c);
+      setConversion(co);
+      setHesitate(h);
     }
     loadStats();
   }, []);
@@ -66,6 +74,19 @@ export default function DashboardPage() {
   console.log("device ", devices);
   console.log(" total ", total);
   console.log(" countries ", countries);
+  console.log("Conv ", conversion);
+  console.log("hesite ", hesitate);
+
+  const percentageConversion =
+    total?.visites && total.visites > 0
+      ? (Number(conversion?.conversion ?? 0) / Number(total?.visites ?? 0)) *
+        100
+      : 0;
+
+  const percentageHesitation =
+    total?.visites && total.visites > 0
+      ? (Number(hesitate?.hesitation ?? 0) / Number(total?.visites ?? 0)) * 100
+      : 0;
 
   if (loading) {
     return (
@@ -123,12 +144,13 @@ export default function DashboardPage() {
               hover:-translate-y-1 hover:shadow-md
             "
         >
-          <p className="text-sm text-gray-500">Nombre de visite</p>
+          <p className="text-sm text-gray-500">Taux de conversion</p>
           <div className="flex items-center justify-between">
             <p className="mt-2 text-3xl font-bold text-[#558455]">
-              {total?.visites ?? 0}
+              {percentageConversion.toFixed(1)}
+              <span className="text-[13px]">%</span>
             </p>
-            {Number(total?.visites ?? 0) > 50 ? (
+            {Number(conversion?.conversion ?? 0) > 50 ? (
               <ArrowUp className="text-[#558455]" />
             ) : (
               <ArrowDown className="text-red-600" />
@@ -142,15 +164,16 @@ export default function DashboardPage() {
               hover:-translate-y-1 hover:shadow-md
             "
         >
-          <p className="text-sm text-gray-500">Nombre de visite</p>
+          <p className="text-sm text-gray-500">Taux d&apos;hesitation</p>
           <div className="flex items-center justify-between">
             <p className="mt-2 text-3xl font-bold text-[#558455]">
-              {total?.visites ?? 0}
+              {percentageHesitation.toFixed(1)}
+              <span className="text-[13px]">%</span>
             </p>
-            {Number(total?.visites ?? 0) > 50 ? (
-              <ArrowUp className="text-[#558455]" />
-            ) : (
+            {Number(hesitate?.hesitation ?? 0) > 50 ? (
               <ArrowDown className="text-red-600" />
+            ) : (
+              <ArrowUp className="text-[#558455]" />
             )}
           </div>
         </div>
@@ -242,5 +265,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-

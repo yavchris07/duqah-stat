@@ -12,18 +12,28 @@ export async function GET(request: Request) {
     );
   }
 
-  const countries = await query<{
-    country: string;
-    visites: number;
-  }[]>(
-    `
-    SELECT country, COUNT(*) AS visites
-    FROM user_events
-    WHERE client_id = ?
-    GROUP BY country
-    `,
-    [clientId]
-  );
+  // const countries = await query<{
+  //   country: string;
+  //   visites: number;
+  // }[]>(
+  //   `
+  //   SELECT country, COUNT(*) AS visites
+  //   FROM user_events
+  //   WHERE client_id = ?
+  //   GROUP BY country
+  //   `,
+  //   [clientId]
+  // );
+  const countries = await query(
+  `
+  SELECT country, COUNT(*) AS visites
+  FROM user_events
+  WHERE client_id = ?
+  GROUP BY country
+  `,
+  [clientId]
+) as { country: string; visites: number }[];
+
 
   return NextResponse.json(countries);
 }

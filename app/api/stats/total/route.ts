@@ -12,16 +12,14 @@ export async function GET(request: Request) {
     );
   }
 
-  const result = await queryOne<{
-    visites: number;
-  }>(
+  const result = await queryOne(
     `
     SELECT COUNT(ip_address) AS visites
     FROM user_events
     WHERE client_id = ?
     `,
     [clientId]
-  );
+  ) as { visites: number } | null;
 
   return NextResponse.json({
     visites: result?.visites ?? 0,
